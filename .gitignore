@@ -202,5 +202,5 @@ temp/
 evals/results/*
 !evals/results/.gitkeep
 
-# Task tracking (temporary)
+# User-generated task files
 tasks/
