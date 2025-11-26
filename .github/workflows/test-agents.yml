@@ -252,3 +252,23 @@ jobs:
           git push origin main --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create GitHub Release
+        run: |
+          NEW_VERSION=$(cat VERSION)
+          
+          # Extract changelog entry for this version
+          RELEASE_NOTES=$(awk '/^## \['"$NEW_VERSION"'\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)
+          
+          # If no specific notes found, use commit message
+          if [ -z "$RELEASE_NOTES" ]; then
+            RELEASE_NOTES="Release v$NEW_VERSION"
+          fi
+          
+          # Create the release
+          gh release create "v$NEW_VERSION" \
+            --title "v$NEW_VERSION" \
+            --notes "$RELEASE_NOTES" \
+            --latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
