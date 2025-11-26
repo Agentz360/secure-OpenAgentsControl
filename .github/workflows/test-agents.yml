@@ -28,16 +28,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'evals/framework/package-lock.json'
       
+      # Install the OpenCode CLI (from opencode.ai, NOT our install.sh)
+      # Our install.sh only installs agents/commands/tools, not the CLI binary
+      # The @opencode-ai/sdk spawns `opencode serve` internally, so CLI is required
       - name: Install OpenCode CLI
         run: |
-          bash install.sh
-          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
-      
-      - name: Verify OpenCode installation
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
+          npm install -g opencode-ai
           which opencode
           opencode --version
+      
+      # Install our OpenAgents components (agents, commands, tools)
+      - name: Install OpenAgents Components
+        run: bash install.sh essential --install-dir .opencode
       
       - name: Install dependencies
         working-directory: evals/framework
@@ -48,9 +50,7 @@ jobs:
         run: npm run build
       
       - name: Run OpenAgent smoke test
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
-          npm run test:ci:openagent
+        run: npm run test:ci:openagent
         env:
           CI: true
       
@@ -78,16 +78,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'evals/framework/package-lock.json'
       
+      # Install the OpenCode CLI (from opencode.ai, NOT our install.sh)
+      # Our install.sh only installs agents/commands/tools, not the CLI binary
+      # The @opencode-ai/sdk spawns `opencode serve` internally, so CLI is required
       - name: Install OpenCode CLI
         run: |
-          bash install.sh
-          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
-      
-      - name: Verify OpenCode installation
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
+          npm install -g opencode-ai
           which opencode
           opencode --version
+      
+      # Install our OpenAgents components (agents, commands, tools)
+      - name: Install OpenAgents Components
+        run: bash install.sh essential --install-dir .opencode
       
       - name: Install dependencies
         working-directory: evals/framework
@@ -98,9 +100,7 @@ jobs:
         run: npm run build
       
       - name: Run OpenCoder smoke test
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
-          npm run test:ci:opencoder
+        run: npm run test:ci:opencoder
         env:
           CI: true
       
