@@ -41,24 +41,6 @@
         "category": "core"
       },
       {
-        "id": "openimplementer",
-        "name": "OpenImplementer",
-        "type": "agent",
-        "path": ".opencode/agent/core/openimplementer.md",
-        "description": "Lightweight implementation agent for focused coding tasks with direct execution, self-testing, and specialist review",
-        "tags": [
-          "implementation",
-          "focused-tasks",
-          "direct-execution",
-          "lightweight"
-        ],
-        "dependencies": [
-          "subagent:contextscout",
-          "subagent:reviewer"
-        ],
-        "category": "core"
-      },
-      {
         "id": "openagent",
         "name": "OpenAgent",
         "type": "agent",
@@ -671,37 +653,6 @@
       }
     ],
     "plugins": [
-      {
-        "id": "telegram-bot",
-        "name": "Telegram Bot Library",
-        "type": "plugin",
-        "path": ".opencode/_lib/telegram-bot.ts",
-        "description": "Simple Telegram Bot wrapper for sending notifications",
-        "tags": [
-          "telegram",
-          "bot",
-          "library"
-        ],
-        "dependencies": [],
-        "category": "specialized"
-      },
-      {
-        "id": "telegram-notify",
-        "name": "Telegram Notifications",
-        "type": "plugin",
-        "path": ".opencode/plugin/telegram-notify.ts",
-        "description": "Send notifications via Telegram bot",
-        "tags": [
-          "notifications",
-          "telegram",
-          "integration"
-        ],
-        "dependencies": [
-          "tool:env",
-          "plugin:telegram-bot"
-        ],
-        "category": "specialized"
-      },
       {
         "id": "notify",
         "name": "Generic Notifier",
@@ -2822,11 +2773,10 @@
     },
     "developer": {
       "name": "Developer",
-      "description": "Complete software development environment with code generation, testing, review, and build tools. Choose OpenImplementer for focused tasks or OpenCoder for complex architecture. Recommended for most developers.",
+      "description": "Complete software development environment with code generation, testing, review, and build tools. Use OpenAgent for general tasks (1-4 files) or OpenCoder for complex architecture (4+ files). Recommended for most developers.",
       "badge": "RECOMMENDED",
       "components": [
         "agent:openagent",
-        "agent:openimplementer",
         "agent:opencoder",
         "subagent:task-manager",
         "subagent:frontend-specialist",
@@ -2876,8 +2826,6 @@
         "tool:env",
         "tool:gemini",
         "plugin:notify",
-        "plugin:telegram-bot",
-        "plugin:telegram-notify",
         "context:essential-patterns",
         "context:project-context",
         "context:quick-start",
@@ -2894,7 +2842,6 @@
       "description": "Everything included - all agents, subagents, tools, and plugins for maximum functionality.",
       "components": [
         "agent:openagent",
-        "agent:openimplementer",
         "agent:opencoder",
         "agent:eval-runner",
         "agent:copywriter",
@@ -2923,8 +2870,6 @@
         "tool:env",
         "tool:gemini",
         "plugin:notify",
-        "plugin:telegram-bot",
-        "plugin:telegram-notify",
         "context:essential-patterns",
         "context:project-context",
         "context:quick-start",
@@ -2941,7 +2886,6 @@
       "description": "Full installation plus System Builder for creating custom AI architectures. For power users and contributors.",
       "components": [
         "agent:openagent",
-        "agent:openimplementer",
         "agent:opencoder",
         "agent:system-builder",
         "agent:repo-manager",
@@ -2979,8 +2923,6 @@
         "tool:env",
         "tool:gemini",
         "plugin:notify",
-        "plugin:telegram-bot",
-        "plugin:telegram-notify",
         "context:essential-patterns",
         "context:project-context",
         "context:quick-start",
