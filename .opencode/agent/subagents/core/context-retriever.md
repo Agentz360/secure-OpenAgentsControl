@@ -3,15 +3,7 @@ name: Context Retriever
 description: Generic context search and retrieval specialist for finding relevant context files, standards, and guides in any repository
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  bash: false
-  edit: false
-  write: false
-permissions:
+permission:
   bash:
     "*": "deny"
   edit:

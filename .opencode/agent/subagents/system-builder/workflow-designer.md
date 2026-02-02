@@ -3,14 +3,7 @@ name: WorkflowDesigner
 description: Designs complete workflow definitions with context dependencies and success criteria
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  write: true
-  edit: true
-  grep: true
-  glob: true
-  task: true
-permissions:
+permission:
   task:
     contextscout: "allow"
     "*": "deny"
