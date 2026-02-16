@@ -1,3 +1,5 @@
+<!-- Context: openagents-repo/examples | Priority: high | Version: 1.0 | Updated: 2026-02-15 -->
+
 # Multi-File Skill Structure
 
 **Purpose**: Example of a skill with supporting files and scripts
@@ -38,8 +40,8 @@ with pdfplumber.open("doc.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
 
-For form filling, see [FORMS.md](FORMS.md).
-For detailed API reference, see [REFERENCE.md](REFERENCE.md).
+For form filling, see FORMS.md (example file).
+For detailed API reference, see REFERENCE.md (example file).
 
 ## Requirements
 

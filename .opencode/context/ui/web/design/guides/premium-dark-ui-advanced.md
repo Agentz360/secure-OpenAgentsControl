@@ -1,3 +1,5 @@
+<!-- Context: ui/premium-dark-ui-advanced | Priority: high | Version: 1.0 | Updated: 2026-02-15 -->
+
 # Premium Dark UI - Advanced
 
 Animations, accessibility, and checklists for premium dark UI.
@@ -142,4 +144,4 @@ Before launching, verify:
 - [Colors & Typography](./premium-dark-ui-colors.md)
 - [Components](./premium-dark-ui-components.md)
 - [Layouts](./premium-dark-ui-layouts.md)
-- [Full System Guide](./premium-dark-ui-system.md)
+- [Visual Reference](./premium-dark-ui-visual-reference.md)

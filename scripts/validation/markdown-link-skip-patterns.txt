@@ -13,6 +13,16 @@ literal:/existing-
 literal:.opencode/command/build-context-system.md
 literal:.opencode/command/validate-repo.md
 
+# Ignore example placeholder paths (intentional non-existent files for documentation)
+literal:.opencode/context/file.md
+literal:.opencode/context/security/auth-patterns.md
+literal:.opencode/context/architecture/ddd-patterns.md
+literal:.opencode/context/architecture/patterns.md
+literal:.opencode/context/core/story-mapping/guide.md
+literal:.opencode/context/core/prioritization/scoring.md
+literal:.opencode/context/core/standards/naming-conventions.md
+literal:.opencode/context/development/backend/auth/jwt-patterns.md
+
 # Ignore external and anchor links (also filtered in code, kept for clarity).
 ^https?://
 ^mailto:

@@ -1,3 +1,5 @@
+<!-- Context: development/navigation | Priority: critical | Version: 1.0 | Updated: 2026-02-15 -->
+
 # React Development
 
 **Purpose**: Modern React patterns, hooks, and component design
@@ -8,7 +10,7 @@
 
 | File | Description | Priority |
 |------|-------------|----------|
-| [react-patterns.md](react-patterns.md) | React hooks, components, state management | high |
+| _(No files yet)_ | | |
 
 ---
 

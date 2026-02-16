@@ -1,3 +1,5 @@
+<!-- Context: openagents-repo/guides | Priority: high | Version: 1.0 | Updated: 2026-02-15 -->
+
 # Creating Skills
 
 **Purpose**: Step-by-step guide to create Agent Skills
@@ -58,7 +60,7 @@ my-skill/
 
 Reference in SKILL.md:
 ```markdown
-For complete API details, see [reference.md](reference.md)
+For complete API details, see reference.md (example file)
 ```
 
 ---

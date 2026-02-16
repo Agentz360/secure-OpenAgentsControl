@@ -1,3 +1,5 @@
+<!-- Context: openagents-repo/concepts | Priority: critical | Version: 1.0 | Updated: 2026-02-15 -->
+
 # Concept: Compatibility Layer Architecture
 
 **Purpose**: Enable bidirectional translation between OpenAgents Control and other AI coding tools
@@ -78,7 +80,7 @@ Tool-specific config files
 
 ```typescript
 // Load OAC agent
-const agent = await AgentLoader.loadAgent('.opencode/agent/openagent.md')
+const agent = await AgentLoader.loadAgent('.opencode/agent/core/openagent.md')
 
 // Get Claude adapter
 const adapter = AdapterRegistry.get('claude')
