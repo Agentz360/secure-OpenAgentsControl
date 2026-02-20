@@ -1,327 +1,109 @@
 ---
 name: using-oac
-description: OpenAgents Control workflow for context-aware development. Auto-invokes on every task to ensure proper context discovery, planning, and execution with approval gates.
+description: "Use when starting any conversation — establishes how to find and use OAC skills, requiring Skill tool invocation BEFORE ANY response including clarifying questions"
 ---
 
-# OpenAgents Control (OAC) Workflow
+<EXTREMELY-IMPORTANT>
+If you think there is even a 1% chance an OAC skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
 
-**Purpose**: Guide Claude through context-aware development using the 6-stage OAC workflow.
+IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
 
-**When to use**: Automatically invoked for every development task to ensure proper context discovery, planning, and validation.
+This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+</EXTREMELY-IMPORTANT>
 
----
+## How to Access Skills
 
-## 6-Stage Workflow
+**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
 
-Execute these stages in order for every development task:
+# Using OAC Skills
 
-### Stage 1: Analyze & Discover
+## The Rule
 
-**Goal**: Understand the task and discover relevant context files.
+**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
-**Actions**:
-1. Analyze the user's request to understand:
-   - What they want to build/change
-   - Technical scope and complexity
-   - Potential risks or dependencies
+```dot
+digraph skill_flow {
+    "User message received" [shape=doublecircle];
+    "About to build/create something?" [shape=doublecircle];
+    "Already brainstormed?" [shape=diamond];
+    "Invoke oac:brainstorming skill" [shape=box];
+    "Might any OAC skill apply?" [shape=diamond];
+    "Invoke Skill tool" [shape=box];
+    "Announce: 'Using [skill] to [purpose]'" [shape=box];
+    "Has checklist?" [shape=diamond];
+    "Create TodoWrite todo per item" [shape=box];
+    "Follow skill exactly" [shape=box];
+    "Respond (including clarifications)" [shape=doublecircle];
 
-2. Invoke the `/context-discovery` skill to find relevant context files:
-   - Coding standards and conventions
-   - Architecture patterns
-   - Security guidelines
-   - Domain-specific guides
+    "About to build/create something?" -> "Already brainstormed?";
+    "Already brainstormed?" -> "Invoke oac:brainstorming skill" [label="no"];
+    "Already brainstormed?" -> "Might any OAC skill apply?" [label="yes"];
+    "Invoke oac:brainstorming skill" -> "Might any OAC skill apply?";
 
-3. Capture the list of context files returned by ContextScout
-
-**Output**: List of context files to load, understanding of task scope
-
----
-
-### Stage 2: Plan & Approve
-
-**Goal**: Create an execution plan and get user approval before proceeding.
-
-**Actions**:
-1. Based on task complexity, create a plan:
-   
-   **Simple tasks** (1-3 files, <30 min):
-   - Direct implementation approach
-   - List of files to create/modify
-   - Key technical decisions
-   
-   **Complex tasks** (4+ files, >30 min):
-   - High-level breakdown into phases
-   - Dependencies between components
-   - Suggest using `/task-breakdown` skill for detailed subtasks
-
-2. Present the plan to the user with:
-   - Summary of approach
-   - Files that will be created/modified
-   - Context files that will be loaded
-   - Estimated complexity
-
-3. **REQUEST APPROVAL** - Wait for user confirmation before proceeding
-
-**Critical**: NEVER proceed to Stage 3 without explicit user approval.
-
-**Output**: Approved execution plan
-
----
-
-### Stage 3: LoadContext
-
-**Goal**: Pre-load ALL discovered context files so they're available during execution.
-
-**Actions**:
-1. Read EVERY context file discovered in Stage 1:
-   - Use the `Read` tool to load each file
-   - Load files in priority order (Critical → High → Medium)
-   - **Example**: If Stage 1 found 5 files, Stage 3 reads all 5
-   - **Important**: Don't skip any files - load everything discovered
-
-2. Internalize the loaded context:
-   - Coding standards and patterns
-   - Security requirements
-   - Naming conventions
-   - Architecture constraints
-   - Project-specific conventions
-
-**Why This Matters**: This stage prevents nested ContextScout calls during execution. By loading ALL context upfront, subagents invoked in Stage 4 can use the pre-loaded context without needing to call ContextScout themselves. This maintains the flattened delegation hierarchy required by Claude Code.
-
-3. If external libraries are involved, invoke `/external-scout` to fetch current API docs:
-   - **Example**: If using Drizzle ORM → `/external-scout drizzle schemas`
-   - **Example**: If using React hooks → `/external-scout react hooks`
-   - Load the cached documentation files returned by ExternalScout
-   - Apply current API patterns from external docs
-
-**Output**: All context loaded (internal + external) and ready for execution
-
----
-
-### Stage 4: Execute
-
-**Goal**: Implement the solution following loaded context and standards.
-
-**Actions**:
-
-**For Simple Tasks** (direct execution):
-1. Implement the solution directly:
-   - Follow coding standards from loaded context
-   - Apply security patterns
-   - Use naming conventions
-   - Create tests if required
-
-2. Self-review before completion:
-   - Verify all acceptance criteria met
-   - Check for type errors or missing imports
-   - Scan for debug artifacts (console.log, TODO, etc.)
-   - Validate against loaded standards
-
-**For Complex Tasks** (delegated execution):
-1. Invoke `/task-breakdown` skill to create detailed subtasks:
-   - TaskManager will create JSON task files
-   - Each subtask will have clear acceptance criteria
-   - Dependencies will be mapped
-
-2. Execute subtasks in order:
-   - Use `/code-execution` skill for implementation subtasks
-   - Use `/test-generation` skill for test subtasks
-   - Use `/code-review` skill for review subtasks
-
-3. Track progress through subtask completion
-
-**Output**: Implementation complete, all deliverables created
-
----
-
-### Stage 5: Validate
-
-**Goal**: Verify the implementation works correctly.
-
-**Actions**:
-1. Run tests (if they exist):
-   - Execute test suite
-   - Check for failures
-   - Verify coverage meets requirements
-
-2. Validate against acceptance criteria:
-   - Check each criterion from the plan
-   - Verify all deliverables exist
-   - Confirm standards were followed
-
-3. **STOP on failure**:
-   - If tests fail → fix issues before proceeding
-   - If criteria unmet → complete implementation
-   - If standards violated → refactor to comply
-
-**Critical**: Do not proceed to Stage 6 if validation fails.
-
-**Output**: Validated, working implementation
-
----
-
-### Stage 6: Complete
-
-**Goal**: Finalize the task with documentation and cleanup.
-
-**Actions**:
-1. Update documentation (if needed):
-   - Update README if new features added
-   - Add inline documentation for complex logic
-   - Update API docs if endpoints changed
-
-2. Summarize what was done:
-   - List files created/modified
-   - Highlight key technical decisions
-   - Note any follow-up tasks needed
-
-3. Cleanup (if applicable):
-   - Remove temporary files
-   - Clean up debug code
-   - Archive session files (for complex tasks)
-
-4. Present completion summary to user
-
-**Output**: Task complete, documented, and summarized
-
----
-
-## Key Principles
-
-### Flat Delegation Hierarchy
-
-**OAC Pattern** (nested - NOT supported in Claude Code):
-```
-Main Agent → TaskManager → CoderAgent → ContextScout
+    "User message received" -> "Might any OAC skill apply?";
+    "Might any OAC skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
+    "Might any OAC skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
+    "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
+    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
+    "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
+    "Has checklist?" -> "Follow skill exactly" [label="no"];
+    "Create TodoWrite todo per item" -> "Follow skill exactly";
+}
 ```
 
-**Claude Code Pattern** (flat - CORRECT):
-```
-Main Agent → ContextScout (via /context-discovery)
-Main Agent → TaskManager (via /task-breakdown)
-Main Agent → CoderAgent (via /code-execution)
-```
+## Available OAC Skills
 
-**Rule**: Only the main agent can invoke subagents. Subagents cannot call other subagents.
+| Skill | When to invoke |
+|-------|---------------|
+| `oac:using-oac` | This skill — loaded at session start |
+| `oac:brainstorming` | BEFORE any creative work, building features, adding functionality |
+| `oac:context-discovery` | BEFORE implementing anything — find standards and patterns |
+| `oac:task-breakdown` | When breaking complex features into subtasks |
+| `oac:code-execution` | When implementing code subtasks |
+| `oac:test-generation` | When creating tests |
+| `oac:code-review` | When reviewing code changes |
+| `oac:external-scout` | When working with external libraries/packages |
+| `oac:parallel-execution` | When running multiple agents in parallel |
+| `oac:systematic-debugging` | BEFORE proposing any fix for a bug or test failure |
+| `oac:verification-before-completion` | BEFORE claiming any work is complete or tests pass |
 
-### Context Pre-Loading
+## Skill Priority
 
-**Why**: Prevents nested ContextScout calls during execution.
+When multiple skills could apply, use this order:
 
-**How**: Stage 3 loads ALL context upfront, so execution stages (4-6) have everything they need.
+1. **Process skills first** (brainstorming, debugging) — these determine HOW to approach the task
+2. **Implementation skills second** (context-discovery, task-breakdown, code-execution) — these guide execution
 
-### Approval Gates
+"Let's build X" → brainstorming first, then context-discovery, then implementation skills.
+"Fix this bug" → systematic-debugging first, then verification-before-completion.
 
-**Critical checkpoints**:
-- **Stage 2 → Stage 3**: User must approve the plan
-- **Stage 5 → Stage 6**: Validation must pass
+## Red Flags
 
-**Never skip approval** - it prevents wasted work and ensures alignment.
+These thoughts mean STOP — you're rationalizing:
 
-### Progressive Complexity
+| Thought | Reality |
+|---------|---------|
+| "This is just a simple question" | Questions are tasks. Check for skills. |
+| "I need more context first" | Skill check comes BEFORE clarifying questions. |
+| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
+| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
+| "Let me gather information first" | Skills tell you HOW to gather information. |
+| "This doesn't need a formal skill" | If a skill exists, use it. |
+| "I remember this skill" | Skills evolve. Read current version. |
+| "This doesn't count as a task" | Action = task. Check for skills. |
+| "The skill is overkill" | Simple things become complex. Use it. |
+| "I'll just do this one thing first" | Check BEFORE doing anything. |
+| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
+| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
 
-**Simple tasks**: Stages 1-2-3-4-5-6 executed inline by main agent
+## Skill Types
 
-**Complex tasks**: Stages 1-2-3 by main agent, Stage 4 delegated to TaskManager + specialists
+**Rigid** (systematic-debugging, verification-before-completion): Follow exactly. Don't adapt away discipline.
 
----
+**Flexible** (brainstorming, context-discovery): Adapt principles to context.
 
-## Skill Invocations
+The skill itself tells you which.
 
-Use these skills at the appropriate stages:
+## User Instructions
 
-| Skill | When to Invoke | Purpose |
-|-------|----------------|---------|
-| `/context-discovery` | Stage 1 | Find relevant context files |
-| `/external-scout` | Stage 3 | Fetch external library documentation |
-| `/task-breakdown` | Stage 4 (complex tasks) | Create detailed subtasks |
-| `/code-execution` | Stage 4 (subtasks) | Implement code subtasks |
-| `/test-generation` | Stage 4 (subtasks) | Create test subtasks |
-| `/code-review` | Stage 4 (subtasks) | Review code subtasks |
-
----
-
-## Example Workflow
-
-### Simple Task: "Add email validation to user registration"
-
-**Stage 1**: Analyze → Invoke `/context-discovery` → Get validation patterns, security standards
-
-**Stage 2**: Plan → "Add email regex validation to registration endpoint" → Request approval
-
-**Stage 3**: Load context → Read validation patterns, security standards
-
-**Stage 4**: Execute → Implement validation, add tests, self-review
-
-**Stage 5**: Validate → Run tests, verify criteria met
-
-**Stage 6**: Complete → Update API docs, summarize changes
-
-### Complex Task: "Build user authentication system"
-
-**Stage 1**: Analyze → Invoke `/context-discovery` → Get auth patterns, security standards, architecture guides
-
-**Stage 2**: Plan → "Multi-phase: JWT service, middleware, endpoints, tests" → Request approval
-
-**Stage 3**: Load context → Read all discovered context files
-
-**Stage 4**: Execute → Invoke `/task-breakdown` → TaskManager creates subtasks → Execute subtasks using `/code-execution`, `/test-generation`, `/code-review`
-
-**Stage 5**: Validate → Run full test suite, verify all acceptance criteria
-
-**Stage 6**: Complete → Update docs, summarize implementation, archive session
-
----
-
-## Anti-Patterns to Avoid
-
-❌ **Skipping Stage 1** - Coding without context discovery leads to inconsistent patterns
-
-❌ **Skipping Stage 2 approval** - Implementing without user buy-in wastes effort
-
-❌ **Nested subagent calls** - Subagents calling other subagents (not supported in Claude Code)
-
-❌ **Context discovery during execution** - Should be done in Stage 1, loaded in Stage 3
-
-❌ **Proceeding with failed validation** - Stage 5 failures must be fixed before Stage 6
-
----
-
-## Session Management (Complex Tasks)
-
-For complex tasks requiring TaskManager delegation:
-
-**Session Location**: `.tmp/sessions/{YYYY-MM-DD}-{task-slug}/`
-
-**Session Files**:
-- `context.md` - Task context, discovered files, requirements
-- `progress.md` - Execution progress tracking
-
-**Cleanup**: After Stage 6, ask user if session files should be deleted
-
----
-
-## Related Skills
-
-- `context-discovery` - Stage 1 context discovery
-- `external-scout` - Stage 3 external library documentation
-- `task-breakdown` - Stage 4 complex task delegation
-- `code-execution` - Stage 4 code implementation
-- `test-generation` - Stage 4 test creation
-- `code-review` - Stage 4 code review
-
----
-
-## Success Criteria
-
-✅ Every task follows all 6 stages in order
-
-✅ Context discovered before execution
-
-✅ User approval obtained before implementation
-
-✅ All context pre-loaded (no nested discovery)
-
-✅ Validation passes before completion
-
-✅ Documentation updated and task summarized
+Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
