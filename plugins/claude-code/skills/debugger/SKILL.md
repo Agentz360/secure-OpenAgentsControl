@@ -1,5 +1,5 @@
 ---
-name: systematic-debugging
+name: debugger
 description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 ---
 
